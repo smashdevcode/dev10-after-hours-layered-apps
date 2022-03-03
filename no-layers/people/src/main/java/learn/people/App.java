@@ -2,11 +2,9 @@ package learn.people;
 
 import learn.people.models.Person;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /*
@@ -36,6 +34,7 @@ Things to consider...
 
 public class App {
     private static final Scanner console = new Scanner(System.in);
+    private static final String filePath = "./data/people.csv";
 
     public static void main(String[] args) {
         run();
@@ -52,7 +51,7 @@ public class App {
         displayMessage("Goodbye!");
     }
 
-    private static void runApp() {
+    private static void runApp() throws Exception {
         for (int option = chooseMenuOption();
              option > 0;
              option = chooseMenuOption()) {
@@ -85,6 +84,8 @@ public class App {
     }
 
     private static void displayPeople() {
+        displayHeader("People");
+
         ArrayList<Person> people = findAll();
 
         // display that data
@@ -93,31 +94,55 @@ public class App {
         }
     }
 
-    private static void addPerson() {
+    private static void addPerson() throws Exception {
+        displayHeader("Add a Person");
 
-    /*
-     * Prompt the user for first name and last name
-     *
-     * Add readRequiredString() helper method
-     *
-     * Create an instance of the Person model
-     *
-     * Validate the user data
-     *   Validate that the first name was provided
-     *   Validate that the last name was provided
-     *
-     * If there are validation errors, display the errors to the user and don't persist the person to the CSV file
-     *
-     * Persist the person to the CSV file
-     *   Get the list of people
-     *   Determine the next available ID
-     *   Set the person's ID
-     *   Add the person to the list
-     *   Write the list to the file
-     *
-     * Display success message
-     */
+        // #1 "unwinding"... "decomposing"
+//        String firstName = readString("First Name");
+//        String lastName = readString("Last Name");
+//
+//        Person person = new Person(0, firstName, lastName);
 
+        // #2
+        Person person = new Person();
+        person.setFirstName(readString("First Name"));
+        person.setLastName(readString("Last Name"));
+
+        List<String> errorMessages = new ArrayList<>();
+
+        if (person.getFirstName() == null || person.getFirstName().isBlank()) {
+            errorMessages.add("Person first name is required.");
+        }
+
+        if (person.getLastName() == null || person.getLastName().isBlank()) {
+            errorMessages.add("Person last name is required.");
+        }
+
+        if (errorMessages.size() > 0) {
+            displayHeader("[Errors]");
+            for (String errorMessage : errorMessages) {
+                System.out.println(errorMessage);
+            }
+            return; // bail!
+        }
+
+        List<Person> people = findAll();
+
+        int nextId = 0;
+        for (Person p : people) {
+            if (nextId < p.getId()) {
+                nextId = p.getId();
+            }
+        }
+        nextId = nextId + 1;
+
+        person.setId(nextId);
+
+        people.add(person);
+
+        writeToFile(people);
+
+        displayMessage(String.format("[Success]%nPerson %s added.", person.getId()));
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -127,7 +152,6 @@ public class App {
     private static ArrayList<Person> findAll() {
         // read the data from the CSV file
         ArrayList<Person> people = new ArrayList<>();
-        String filePath = "./data/people.csv";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
@@ -149,6 +173,16 @@ public class App {
             System.out.println("Could not open the file path: " + filePath);
         }
         return people;
+    }
+
+    private static void writeToFile(List<Person> people) throws Exception {
+        try (PrintWriter writer = new PrintWriter(filePath)) {
+            for (Person person : people) {
+                writer.printf("%s,%s,%s%n", person.getId(), person.getFirstName(), person.getLastName());
+            }
+        } catch (IOException ex) {
+            throw new Exception("Could not write to file path: " + filePath, ex);
+        }
     }
 
     //////////////////////////////////////////////////////////////////////
