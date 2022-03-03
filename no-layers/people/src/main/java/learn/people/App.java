@@ -9,6 +9,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*
+
+Pros
+
+* See everything in one place
+* Easy to learn in the beginning
+* Easy to share global variables across methods
+* Quicker to develop
+
+Cons
+
+* How well can we support more than one developer?
+* While it's helpful to see everything in one place... there's a tipping to the dark side
+* Difficult to unit test
+* Difficult to reuse code
+
+Maintainability?
+
+* Proper encapsulation
+* Single responsibility principle
+* Loose coupling between components
+
+
+ */
+
 public class App {
     private static final Scanner console = new Scanner(System.in);
 
@@ -37,7 +62,7 @@ public class App {
                     displayPeople();
                     break;
                 case 2:
-                    displayMessage("Not implemented");
+                    addPerson();
                     break;
                 case 3:
                     displayMessage("Not implemented");
@@ -67,6 +92,37 @@ public class App {
             System.out.printf("%s: %s %s%n", person.getId(), person.getFirstName(), person.getLastName());
         }
     }
+
+    private static void addPerson() {
+
+    /*
+     * Prompt the user for first name and last name
+     *
+     * Add readRequiredString() helper method
+     *
+     * Create an instance of the Person model
+     *
+     * Validate the user data
+     *   Validate that the first name was provided
+     *   Validate that the last name was provided
+     *
+     * If there are validation errors, display the errors to the user and don't persist the person to the CSV file
+     *
+     * Persist the person to the CSV file
+     *   Get the list of people
+     *   Determine the next available ID
+     *   Set the person's ID
+     *   Add the person to the list
+     *   Write the list to the file
+     *
+     * Display success message
+     */
+
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // FILE ACCESS
+    //////////////////////////////////////////////////////////////////////
 
     private static ArrayList<Person> findAll() {
         // read the data from the CSV file
