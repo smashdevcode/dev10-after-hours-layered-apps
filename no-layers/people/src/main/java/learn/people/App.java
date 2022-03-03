@@ -97,17 +97,29 @@ public class App {
     private static void addPerson() throws Exception {
         displayHeader("Add a Person");
 
-        // #1 "unwinding"... "decomposing"
-//        String firstName = readString("First Name");
-//        String lastName = readString("Last Name");
-//
-//        Person person = new Person(0, firstName, lastName);
+        Person person = createPerson();
 
-        // #2
-        Person person = new Person();
-        person.setFirstName(readString("First Name"));
-        person.setLastName(readString("Last Name"));
+        List<String> errorMessages = validatePerson(person);
 
+        if (errorMessages.size() > 0) {
+            displayErrorMessages(errorMessages);
+            return; // bail!
+        }
+
+        List<Person> people = findAll();
+
+        int nextId = getNextId(people);
+
+        person.setId(nextId);
+
+        people.add(person);
+
+        writeToFile(people);
+
+        displayMessage(String.format("[Success]%nPerson %s added.", person.getId()));
+    }
+
+    private static List<String> validatePerson(Person person) {
         List<String> errorMessages = new ArrayList<>();
 
         if (person.getFirstName() == null || person.getFirstName().isBlank()) {
@@ -117,17 +129,10 @@ public class App {
         if (person.getLastName() == null || person.getLastName().isBlank()) {
             errorMessages.add("Person last name is required.");
         }
+        return errorMessages;
+    }
 
-        if (errorMessages.size() > 0) {
-            displayHeader("[Errors]");
-            for (String errorMessage : errorMessages) {
-                System.out.println(errorMessage);
-            }
-            return; // bail!
-        }
-
-        List<Person> people = findAll();
-
+    private static int getNextId(List<Person> people) {
         int nextId = 0;
         for (Person p : people) {
             if (nextId < p.getId()) {
@@ -135,14 +140,7 @@ public class App {
             }
         }
         nextId = nextId + 1;
-
-        person.setId(nextId);
-
-        people.add(person);
-
-        writeToFile(people);
-
-        displayMessage(String.format("[Success]%nPerson %s added.", person.getId()));
+        return nextId;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -202,6 +200,27 @@ public class App {
         System.out.println(message);
     }
 
+    private static void displayErrorMessages(List<String> errorMessages) {
+        displayHeader("[Errors]");
+        for (String errorMessage : errorMessages) {
+            System.out.println(errorMessage);
+        }
+    }
+
+    private static Person createPerson() {
+        // #1 "unwinding"... "decomposing"
+//        String firstName = readString("First Name");
+//        String lastName = readString("Last Name");
+//
+//        Person person = new Person(0, firstName, lastName);
+
+        // #2
+        Person person = new Person();
+        person.setFirstName(readString("First Name"));
+        person.setLastName(readString("Last Name"));
+        return person;
+    }
+
     private static String readString(String prompt) {
         System.out.print(prompt + ": ");
         return console.nextLine();
@@ -218,6 +237,7 @@ public class App {
             }
         }
 
+        // In the real world, you wouldn't leave commented out code in your files.
 //        boolean isValid = false;
 //        int intValue = -1;
 //        while (!isValid) {
