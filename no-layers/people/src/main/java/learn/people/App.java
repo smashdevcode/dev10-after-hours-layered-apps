@@ -25,12 +25,12 @@ Cons
 * Difficult to unit test
 * Difficult to reuse code
 
-Maintainability?
+Things to consider...
 
+* Maintainability
 * Proper encapsulation
 * Single responsibility principle
 * Loose coupling between components
-
 
  */
 
