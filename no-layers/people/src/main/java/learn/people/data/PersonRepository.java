@@ -9,7 +9,7 @@ import java.util.List;
 public class PersonRepository {
     private static final String filePath = "./data/people.csv";
 
-    public ArrayList<Person> findAll() {
+    public List<Person> findAll() {
         // read the data from the CSV file
         ArrayList<Person> people = new ArrayList<>();
 

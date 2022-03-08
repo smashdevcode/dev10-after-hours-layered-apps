@@ -1,15 +1,16 @@
 package learn.people;
 
 import learn.people.data.PersonRepository;
+import learn.people.domain.PersonResult;
+import learn.people.domain.PersonService;
 import learn.people.models.Person;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Controller {
-    private static final Scanner console = new Scanner(System.in);
-    private PersonRepository repository = new PersonRepository();
+    private final Scanner console = new Scanner(System.in);
+    private final PersonService service = new PersonService();
 
     public void run() {
         displayHeader("Welcome to the People app!");
@@ -57,7 +58,7 @@ public class Controller {
     private void displayPeople() {
         displayHeader("People");
 
-        ArrayList<Person> people = repository.findAll();
+        List<Person> people = service.findAll();
 
         // display that data
         for (Person person : people) {
@@ -67,33 +68,13 @@ public class Controller {
 
     private void addPerson() throws Exception {
         displayHeader("Add a Person");
-
-        // Interacting with the user to get the person.
         Person person = createPerson();
-
-        List<String> errorMessages = validatePerson(person);
-
-        if (errorMessages.size() > 0) {
-            displayErrorMessages(errorMessages);
-            return; // bail!
+        PersonResult result = service.create(person);
+        if (result.isSuccess()) {
+            displayMessage(String.format("[Success]%nPerson %s added.", result.getPerson().getId()));
+        } else {
+            displayErrorMessages(result.getMessages());
         }
-
-        person = repository.create(person);
-
-        displayMessage(String.format("[Success]%nPerson %s added.", person.getId()));
-    }
-
-    private List<String> validatePerson(Person person) {
-        List<String> errorMessages = new ArrayList<>();
-
-        if (person.getFirstName() == null || person.getFirstName().isBlank()) {
-            errorMessages.add("Person first name is required.");
-        }
-
-        if (person.getLastName() == null || person.getLastName().isBlank()) {
-            errorMessages.add("Person last name is required.");
-        }
-        return errorMessages;
     }
 
     //////////////////////////////////////////////////////////////////////
