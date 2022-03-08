@@ -1,51 +1,14 @@
-package learn.people;
+package learn.people.ui;
 
-import learn.people.data.PersonRepository;
-import learn.people.domain.PersonResult;
-import learn.people.domain.PersonService;
 import learn.people.models.Person;
 
 import java.util.List;
 import java.util.Scanner;
 
-public class Controller {
+public class View {
     private final Scanner console = new Scanner(System.in);
-    private final PersonService service = new PersonService();
 
-    public void run() {
-        displayHeader("Welcome to the People app!");
-        // Global error handler.
-        try {
-            runApp();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        displayMessage("Goodbye!");
-    }
-
-    private void runApp() throws Exception {
-        for (int option = chooseMenuOption();
-             option > 0;
-             option = chooseMenuOption()) {
-
-            switch (option) {
-                case 1:
-                    displayPeople();
-                    break;
-                case 2:
-                    addPerson();
-                    break;
-                case 3:
-                    displayMessage("Not implemented");
-                    break;
-                case 4:
-                    displayMessage("Not implemented");
-                    break;
-            }
-        }
-    }
-
-    private int chooseMenuOption() {
+    public int chooseMenuOption() {
         displayHeader("Main Menu");
         System.out.println("0. Exit");
         System.out.println("1. Display People");
@@ -55,33 +18,7 @@ public class Controller {
         return readInt("Choose [0-4]", 0, 4);
     }
 
-    private void displayPeople() {
-        displayHeader("People");
-
-        List<Person> people = service.findAll();
-
-        // display that data
-        for (Person person : people) {
-            System.out.printf("%s: %s %s%n", person.getId(), person.getFirstName(), person.getLastName());
-        }
-    }
-
-    private void addPerson() throws Exception {
-        displayHeader("Add a Person");
-        Person person = createPerson();
-        PersonResult result = service.create(person);
-        if (result.isSuccess()) {
-            displayMessage(String.format("[Success]%nPerson %s added.", result.getPerson().getId()));
-        } else {
-            displayErrorMessages(result.getMessages());
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////
-    // HELPER METHODS
-    //////////////////////////////////////////////////////////////////////
-
-    private void displayHeader(String message) {
+    public void displayHeader(String message) {
         int length = message.length();
         System.out.println();
         System.out.println(message);
@@ -89,19 +26,25 @@ public class Controller {
         System.out.println();
     }
 
-    private void displayMessage(String message) {
+    public void displayMessage(String message) {
         System.out.println();
         System.out.println(message);
     }
 
-    private void displayErrorMessages(List<String> errorMessages) {
+    public void displayErrorMessages(List<String> errorMessages) {
         displayHeader("[Errors]");
         for (String errorMessage : errorMessages) {
             System.out.println(errorMessage);
         }
     }
 
-    private Person createPerson() {
+    public void displayPeople(List<Person> people) {
+        for (Person person : people) {
+            System.out.printf("%s: %s %s%n", person.getId(), person.getFirstName(), person.getLastName());
+        }
+    }
+
+    public Person createPerson() {
         // #1 "unwinding"... "decomposing"
 //        String firstName = readString("First Name");
 //        String lastName = readString("Last Name");

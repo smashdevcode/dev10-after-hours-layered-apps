@@ -1,11 +1,6 @@
 package learn.people;
 
-import learn.people.data.PersonRepository;
-import learn.people.models.Person;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import learn.people.ui.Controller;
 
 /*
 
